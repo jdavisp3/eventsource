@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>EventSource Demo</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <style type="text/css">
+      .bubble {
+        width: 500px;
+        padding: 10px;
+        margin: 3px;
+        border-radius: 10px;
+      }
+      .bubble-open {
+        background: #6a9a55;
+      }
+      .bubble-message {
+        background: #8f8f8f;
+      }
+      .bubble-error {
+        background: #cb2424;
+      }
+    </style>
+  </head>
+
+  <body>
+    <p>This is the EventSource Demo. Click an event bubble to remove it.</p>
+    <div id="events"></div>
+  </body>
+
+  <script type="text/javascript">
+    $(function() {
+      var remove_bubble = function(bubble) {
+        bubble.hide({'always': function () { bubble.remove(); }});
+      }
+
+      var add_bubble = function(text, subclass) {
+        var bubble = $(document.createElement('div'));
+        $('#events').append(bubble);
+        bubble.text(text)
+          .addClass('bubble bubble-' + subclass)
+          .hide()
+          .show('fade')
+          .click(function () { remove_bubble(bubble); });
+      }
+
+      var source = new EventSource('eventsource');
+      var total = 0;
+
+      source.onopen = function (event) {
+        add_bubble('event source opened at ' + source.url, 'open');
+      };
+
+      source.onmessage = function (event) {
+        add_bubble(event.type + ' ' + event.lastEventId + ': ' + event.data, 'message');
+      };
+
+      source.onerror = function (event) {
+        add_bubble('event source connection failed', 'error');
+      };
+
+      source.addEventListener('number', function (event) {
+          total += parseInt(event.data);
+          add_bubble('total: ' + total, 'message');
+        }, false);
+    });
+  </script>
+
+</html>
