@@ -115,7 +115,7 @@ send(Reply, Req) ->
 	cowboy_req:chunk(eventsource_iodata(Reply), Req).
 
 eventsource_iodata(Messages) when is_list(Messages)->
-	lists:map(fun eventsource_message_iodata/1, Messages);
+	[eventsource_message_iodata(Msg) || Msg <- Messages];
 eventsource_iodata(Message) ->
 	eventsource_message_iodata(Message).
 
