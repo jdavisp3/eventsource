@@ -44,7 +44,12 @@
           .click(function () { remove_bubble(bubble); });
       }
 
-      var source = new EventSource('eventsource');
+      if (!window.EventSource) {
+        add_bubble('Your browser does not support EventSource.', 'error');
+        return;
+      }
+
+      var source = new window.EventSource('eventsource');
       var total = 0;
 
       source.onopen = function (event) {
